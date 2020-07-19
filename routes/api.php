@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 route::post('register', 'Api\AuthController@register');
 route::post('login', 'Api\AuthController@login');
 
 
-Route::group(['prefix' => 'api', 'middleware' => 'auth:api'], function() {
+Route::group(['middleware' => 'auth:api'], function() {
+    Route::get('logout', 'Api\AuthController@logout');
 });

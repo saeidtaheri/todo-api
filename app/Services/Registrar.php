@@ -51,4 +51,14 @@ class Registrar {
 
         return response()->json(['error'=>'Unauthorized!'], 401);
     }
+
+    public function logout($request)
+    {
+        $token = $request->user()->token();
+        $token->revoke();
+
+        return response()->json([
+            'success' => 'You have been successfully logged out!',
+        ], 200);
+    }
 }
