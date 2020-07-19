@@ -21,4 +21,9 @@ class AuthController extends Controller
     {
         return $registrar->login($request);
     }
+
+    public function logout(Registrar $registrar, Request $request)
+    {
+        return $registrar->logout($request);
+    }
 }
