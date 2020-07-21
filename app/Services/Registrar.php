@@ -2,10 +2,23 @@
 
 namespace App\Services;
 
+use App\Contracts\RegistrarInterface;
 use Illuminate\Support\Facades\Auth;
-use App\User;
+use App\Models\User;
+use mysql_xdevapi\Exception;
 
-class Registrar {
+class Registrar implements RegistrarInterface{
+
+    protected $model;
+
+    /**
+     * Registrar constructor.
+     * @param User $model
+     */
+    public function __construct(User $model)
+    {
+        $this->model = $model;
+    }
 
     /**
      * @param $user
@@ -13,7 +26,7 @@ class Registrar {
      */
     protected function generateAccessToken($user)
     {
-        $token = $user->createToken($user->email . '-' . now())->accessToken;
+        $token = $user->createToken($user->email . '-' . now());
 
         return $token;
     }
@@ -24,13 +37,18 @@ class Registrar {
      */
     public function register($request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
+        try {
+            $user = $this->model::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password)
+            ]);
 
-        return response()->json($user);
+            return response()->json($user);
+        }catch (Exception $e)
+        {
+            echo $e->getMessage();
+        }
     }
 
     /**
@@ -42,7 +60,7 @@ class Registrar {
         if( Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
 
-            $success['token'] = $this->generateAccessToken($user);
+            $success['token'] = $this->generateAccessToken($user)->accessToken;
 
             return response()->json([
                 'success' => $success,

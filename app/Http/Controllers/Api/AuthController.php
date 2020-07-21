@@ -2,28 +2,33 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\RegistrarInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUser;
 use App\Http\Requests\RegisterUser;
-use App\Services\Registrar;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function register(Registrar $registrar, RegisterUser $request)
+    private $registrar;
+
+    public function __construct(RegistrarInterface $registrar)
     {
-        return $registrar->register($request);
+        $this->registrar = $registrar;
     }
 
-    public function login(Registrar $registrar, LoginUser $request)
+    public function register(RegisterUser $request)
     {
-        return $registrar->login($request);
+        return $this->registrar->register($request);
     }
 
-    public function logout(Registrar $registrar, Request $request)
+    public function login(LoginUser $request)
     {
-        return $registrar->logout($request);
+        return $this->registrar->login($request);
+    }
+
+    public function logout(Request $request)
+    {
+        return $this->registrar->logout($request);
     }
 }
