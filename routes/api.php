@@ -20,4 +20,6 @@ route::post('login', 'Api\AuthController@login');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'Api\AuthController@logout');
+    Route::apiResource('projects', 'Api\ProjectController');
+    Route::apiResource('tasks', 'Api\TaskController');
 });
