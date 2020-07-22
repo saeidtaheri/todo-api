@@ -12,4 +12,14 @@ class Project extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function todos()
+    {
+        return $this->hasMany(Todo::class);
+    }
+
+    public function todotasks()
+    {
+        return $this->hasMany(Todo::class)->parenttasks();
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
+class TodoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +16,10 @@ class ProjectResource extends JsonResource
     {
         return [
             'id'=> $this->id,
-            'name'=> $this->name,
-//            'user' => $this->user,
-            'tasks' => $this->todotasks,
-//            'tasks' => TodoResource::collection($this->todos),
-            'description'=>$this->description,
+            'title'=> $this->title,
+            'body' => $this->body,
+            'is_complete' => $this->is_complete,
+            'children' => $this->children,
             'created_at' => (string) $this->created_at,
             'updated_at' => (string) $this->updated_at,
         ];
