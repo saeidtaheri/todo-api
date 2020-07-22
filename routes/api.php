@@ -13,13 +13,17 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//Test Login Route!!
+route::get('login', function (){
+    echo 'Your not Login!';
+})->name('login');
 
 route::post('register', 'Api\AuthController@register');
 route::post('login', 'Api\AuthController@login');
 
 
-Route::group(['middleware' => 'auth:api'], function() {
+//Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'Api\AuthController@logout');
     Route::apiResource('projects', 'Api\ProjectController');
-    Route::apiResource('tasks', 'Api\TaskController');
-});
+    Route::apiResource('todos', 'Api\TodoController');
+//});
