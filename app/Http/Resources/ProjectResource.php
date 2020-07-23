@@ -19,10 +19,7 @@ class ProjectResource extends JsonResource
             'name'=> $this->name,
 //            'user' => $this->user,
             'tasks' => $this->todotasks,
-//            'tasks' => TodoResource::collection($this->todos),
             'description'=>$this->description,
-            'created_at' => (string) $this->created_at,
-            'updated_at' => (string) $this->updated_at,
         ];
     }
 }

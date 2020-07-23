@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\TodoRequest;
 use App\Http\Resources\TodoResource;
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Todo;
 
 class TodoController
@@ -16,19 +17,33 @@ class TodoController
 
     public function show(Todo $todo)
     {
+
         return new TodoResource($todo);
     }
 
     public function store(TodoRequest $request, Project $project)
     {
         $project = $project::find($request->project);
+        $parent = Todo::findOrFail($request->parent_id);
 
         $todo = new Todo();
         $todo->project_id = $project->id;
-        $todo->parent_id = $request->parent;
+        $todo->parent_id = $parent->id;
         $todo->title = $request->title;
         $todo->body = $request->body;
         $todo->save();
+
+        $tagNames = explode(',',$request->get('tags'));
+        $tagIds = [];
+
+        foreach($tagNames as $tagName)
+        {
+            $tag = Tag::firstOrCreate(['name'=>$tagName]);
+            if($tag) {
+                $tagIds[] = $tag->id;
+            }
+        }
+        $todo->tags()->sync($tagIds);
 
         return new TodoResource($todo);
     }
