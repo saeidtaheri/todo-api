@@ -13,6 +13,11 @@ class Todo extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'todo_tag');
+    }
+
     public function parent()
     {
         return $this->belongsTo(self::class, 'parent_id');
