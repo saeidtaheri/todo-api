@@ -13,4 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'welcome');
+//Route::auth();
+
+Route::view('/', 'welcome')->name('home');

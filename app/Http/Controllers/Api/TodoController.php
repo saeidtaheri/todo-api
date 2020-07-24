@@ -17,13 +17,12 @@ class TodoController
 
     public function show(Todo $todo)
     {
-
         return new TodoResource($todo);
     }
 
     public function store(TodoRequest $request, Project $project)
     {
-        $project = $project::find($request->project);
+        $project = $project::find($request->project_id);
         $parent = Todo::findOrFail($request->parent_id);
 
         $todo = new Todo();
@@ -33,24 +32,15 @@ class TodoController
         $todo->body = $request->body;
         $todo->save();
 
-        $tagNames = explode(',',$request->get('tags'));
-        $tagIds = [];
-
-        foreach($tagNames as $tagName)
-        {
-            $tag = Tag::firstOrCreate(['name'=>$tagName]);
-            if($tag) {
-                $tagIds[] = $tag->id;
-            }
-        }
-        $todo->tags()->sync($tagIds);
+        $this->addTags($todo, $request->get('tags'));
 
         return new TodoResource($todo);
     }
 
     public function update(TodoRequest $request, Todo $todo)
     {
-        $todo->update($request->all());
+        $todo->update($request->except('tags'));
+        $this->addTags($todo, $request->get('tags'));
 
         return new TodoResource($todo);
     }
@@ -62,5 +52,22 @@ class TodoController
         return response()->json([
             'success' => 'Todo Has been Deleted!'
         ], 200);
+    }
+
+    public function addTags($todo,$tags)
+    {
+        if( $tags != "") {
+            $tagNames = explode(',', $tags);
+            $tagIds = [];
+
+            foreach($tagNames as $tagName)
+            {
+                $tag = Tag::firstOrCreate(['name'=>$tagName]);
+                if($tag) {
+                    $tagIds[] = $tag->id;
+                }
+            }
+            $todo->tags()->sync($tagIds);
+        }
     }
 }
