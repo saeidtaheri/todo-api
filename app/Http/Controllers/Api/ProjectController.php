@@ -11,41 +11,70 @@ use App\Models\Project;
 
 class ProjectController extends Controller
 {
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index()
     {
         return ProjectResource::collection(Project::all());
     }
 
+    /**
+     * @param CreateProject $request
+     * @return ProjectResource
+     */
     public function store(CreateProject $request)
     {
-        $project = new Project();
-        $project->user_id = $request->user()->id;
-        $project->name = $request->name;
-        $project->description = $request->description;
-        $project->save();
+        try {
+            $project = new Project();
+            $project->user_id = $request->user()->id;
+            $project->name = $request->name;
+            $project->description = $request->description;
+            $project->save();
 
-        return new ProjectResource($project);
+            return new ProjectResource($project);
+        }catch (\Exception $e) {
+
+        }
    }
 
-   public function show(Project $project)
+    /**
+     * @param Project $project
+     * @return ProjectResource
+     */
+    public function show(Project $project)
    {
        return new ProjectResource($project);
    }
 
-   public function update(UpdateProject $request, Project $project)
+    /**
+     * @param UpdateProject $request
+     * @param Project $project
+     * @return ProjectResource|\Illuminate\Http\JsonResponse
+     */
+    public function update(UpdateProject $request, Project $project)
    {
        if($request->user()->id !== $project->user_id) {
            return response()->json([
                'error' => 'You can only edit your own Project.'
            ], 403);
        }
+       try {
+           $project->update($request->all());
 
-       $project->update($request->all());
+           return new ProjectResource($project);
+       }catch (\Exception $e){
 
-       return new ProjectResource($project);
+       }
    }
 
-   public function destroy(Request $request, Project $project)
+    /**
+     * @param Request $request
+     * @param Project $project
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function destroy(Request $request, Project $project)
    {
        if($request->user()->id !== $project->user_id) {
             return response()->json([
