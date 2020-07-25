@@ -7,6 +7,7 @@ use App\Http\Resources\TodoResource;
 use App\Models\Project;
 use App\Models\Tag;
 use App\Models\Todo;
+use Carbon\Carbon;
 
 class TodoController
 {
@@ -26,10 +27,11 @@ class TodoController
         $parent = Todo::findOrFail($request->parent_id);
 
         $todo = new Todo();
-        $todo->project_id = $project->id;
-        $todo->parent_id = $parent->id;
-        $todo->title = $request->title;
-        $todo->body = $request->body;
+        $todo->project_id   = $project->id;
+        $todo->parent_id    = $parent->id;
+        $todo->title        = $request->title;
+        $todo->body         = $request->body;
+        $todo->reminder     = $request->reminder;
         $todo->save();
 
         $this->addTags($todo, $request->get('tags'));
