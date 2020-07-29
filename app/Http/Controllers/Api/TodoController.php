@@ -68,7 +68,7 @@ class TodoController
 
             return new TodoResource($todo);
         }catch (\Exception $e){
-
+    
         }
     }
 
@@ -96,8 +96,7 @@ class TodoController
             $tagNames = explode(',', $tags);
             $tagIds = [];
 
-            foreach($tagNames as $tagName)
-            {
+            foreach($tagNames as $tagName) {
                 $tag = Tag::firstOrCreate(['name'=>$tagName]);
                 if($tag) {
                     $tagIds[] = $tag->id;

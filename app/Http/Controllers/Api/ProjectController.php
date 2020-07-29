@@ -26,15 +26,11 @@ class ProjectController extends Controller
     public function store(CreateProject $request)
     {
         try {
-            $project = new Project();
-            $project->user_id = $request->user()->id;
-            $project->name = $request->name;
-            $project->description = $request->description;
-            $project->save();
+            $request->project()->save();
 
-            return new ProjectResource($project);
+            return new ProjectResource($request->project());
         }catch (\Exception $e) {
-
+            dd($e);
         }
    }
 
