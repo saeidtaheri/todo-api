@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProject extends FormRequest
+class ProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,7 +31,7 @@ class CreateProject extends FormRequest
 
     public function project()
     {
-        $project =  new Project();
+        $project = new Project();
         $project->user_id = $this->user()->id;
         $project->name = $this->name;
         $project->description = $this->description;

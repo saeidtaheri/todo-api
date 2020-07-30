@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\CreateProject;
+use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\UpdateProject;
 use App\Http\Resources\ProjectResource;
 use Illuminate\Http\Request;
@@ -22,10 +22,10 @@ class ProjectController extends Controller
 
     /**
      * @param ProjectService $project
-     * @param CreateProject $request
+     * @param ProjectRequest $request
      * @return ProjectResource
      */
-    public function store(ProjectService $project, CreateProject $request)
+    public function store(ProjectService $project, ProjectRequest $request)
     {
         return $project->create($request);
     }
@@ -46,7 +46,7 @@ class ProjectController extends Controller
      * @return ProjectResource|\Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function update(ProjectService $projectService, UpdateProject $request, Project $project)
+    public function update(ProjectService $projectService, ProjectRequest $request, Project $project)
    {
        return $projectService->edit($request, $project);
    }

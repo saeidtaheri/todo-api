@@ -3,14 +3,14 @@
 
 namespace App\Services;
 
-use App\Http\Requests\CreateProject;
+use App\Http\Requests\ProjectRequest;
 use App\Http\Requests\UpdateProject;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 
 class ProjectService
 {
-    public function create(CreateProject $request)
+    public function create(ProjectRequest $request)
     {
         try {
             $request->project()->save();
