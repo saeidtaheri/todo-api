@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProject;
 use App\Http\Resources\ProjectResource;
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Services\ProjectService;
 
 class ProjectController extends Controller
 {
@@ -20,19 +21,14 @@ class ProjectController extends Controller
     }
 
     /**
+     * @param ProjectService $project
      * @param CreateProject $request
      * @return ProjectResource
      */
-    public function store(CreateProject $request)
+    public function store(ProjectService $project, CreateProject $request)
     {
-        try {
-            $request->project()->save();
-
-            return new ProjectResource($request->project());
-        }catch (\Exception $e) {
-            dd($e);
-        }
-   }
+        return $project->create($request);
+    }
 
     /**
      * @param Project $project
@@ -44,44 +40,25 @@ class ProjectController extends Controller
    }
 
     /**
+     * @param ProjectService $projectService
      * @param UpdateProject $request
      * @param Project $project
      * @return ProjectResource|\Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public function update(UpdateProject $request, Project $project)
+    public function update(ProjectService $projectService, UpdateProject $request, Project $project)
    {
-       if($request->user()->id !== $project->user_id) {
-           return response()->json([
-               'error' => 'You can only edit your own Project.'
-           ], 403);
-       }
-       try {
-           $project->update($request->all());
-
-           return new ProjectResource($project);
-       }catch (\Exception $e){
-
-       }
+       return $projectService->edit($request, $project);
    }
 
     /**
+     * @param ProjectService $projectService
      * @param Request $request
      * @param Project $project
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Exception
      */
-    public function destroy(Request $request, Project $project)
+    public function destroy(ProjectService $projectService, Request $request, Project $project)
    {
-       if($request->user()->id !== $project->user_id) {
-            return response()->json([
-                'error' => 'You Cant Delete Project!'
-            ], 403);
-       }
-
-       $project->delete();
-
-       return response()->json([
-           'success' => 'Project Has been Deleted!'
-       ], 200);
+        return $projectService->delete($project, $request);
    }
 }
