@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Project;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreateProject extends FormRequest
@@ -26,5 +27,15 @@ class CreateProject extends FormRequest
         return [
             'name' => 'required|unique:projects|min:3',
         ];
+    }
+
+    public function project()
+    {
+        $project =  new Project();
+        $project->user_id = $this->user()->id;
+        $project->name = $this->name;
+        $project->description = $this->description;
+
+        return $project;
     }
 }
