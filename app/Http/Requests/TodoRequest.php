@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Todo;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TodoRequest extends FormRequest
@@ -26,5 +27,10 @@ class TodoRequest extends FormRequest
         return [
             'title' => 'min:3'
         ];
+    }
+
+    public function todo()
+    {
+        return new Todo();
     }
 }

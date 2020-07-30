@@ -7,6 +7,7 @@ use App\Http\Resources\TodoResource;
 use App\Models\Project;
 use App\Models\Tag;
 use App\Models\Todo;
+use App\Services\TodoService;
 use Carbon\Carbon;
 
 class TodoController
@@ -29,80 +30,36 @@ class TodoController
     }
 
     /**
+     * @param TodoService $todo
      * @param TodoRequest $request
      * @param Project $project
      * @return TodoResource
+     * @throws \Exception
      */
-    public function store(TodoRequest $request, Project $project)
+    public function store(TodoService $todo, TodoRequest $request, Project $project)
     {
-        $project = $project::find($request->project_id);
-        $parent = Todo::findOrFail($request->parent_id);
-
-        try {
-            $todo = new Todo();
-            $todo->project_id   = $project->id;
-            $todo->parent_id    = $parent->id;
-            $todo->title        = $request->title;
-            $todo->body         = $request->body;
-            $todo->reminder     = $request->reminder;
-            $todo->save();
-
-            $this->addTags($todo, $request->get('tags'));
-
-            return new TodoResource($todo);
-        }catch (\Exception $e){
-
-        }
+        return $todo->create($request, $project);
     }
 
     /**
+     * @param TodoService $todoService
      * @param TodoRequest $request
      * @param Todo $todo
      * @return TodoResource
-     */
-    public function update(TodoRequest $request, Todo $todo)
-    {
-        try {
-            $todo->update($request->except('tags'));
-            $this->addTags($todo, $request->get('tags'));
-
-            return new TodoResource($todo);
-        }catch (\Exception $e){
-    
-        }
-    }
-
-    /**
-     * @param Todo $todo
-     * @return \Illuminate\Http\JsonResponse
      * @throws \Exception
      */
-    public function destroy(Todo $todo)
+    public function update(TodoService $todoService, TodoRequest $request, Todo $todo)
     {
-        $todo->delete();
-
-        return response()->json([
-            'success' => 'Todo Has been Deleted!'
-        ], 200);
+       return $todoService->edit($todo, $request);
     }
 
     /**
-     * @param $todo
-     * @param $tags
+     * @param TodoService $todoService
+     * @param Todo $todo
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function addTags($todo, $tags)
+    public function destroy(TodoService $todoService, Todo $todo)
     {
-        if( $tags != "") {
-            $tagNames = explode(',', $tags);
-            $tagIds = [];
-
-            foreach($tagNames as $tagName) {
-                $tag = Tag::firstOrCreate(['name'=>$tagName]);
-                if($tag) {
-                    $tagIds[] = $tag->id;
-                }
-            }
-            $todo->tags()->sync($tagIds);
-        }
+        return $todoService->delete($todo);
     }
 }
