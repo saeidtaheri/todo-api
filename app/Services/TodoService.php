@@ -12,7 +12,30 @@ use App\Models\Todo;
 
 class TodoService
 {
-    public function create(TodoRequest $request, Project $projectModel)
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function all(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    {
+        return TodoResource::collection(Todo::parentTasks()->get());
+    }
+
+    /**
+     * @param Todo $todo
+     * @return TodoResource
+     */
+    public function item(Todo $todo): TodoResource
+    {
+        return new TodoResource($todo);
+    }
+
+    /**
+     * @param TodoRequest $request
+     * @param Project $projectModel
+     * @return TodoResource
+     * @throws \Exception
+     */
+    public function create(TodoRequest $request, Project $projectModel): TodoResource
     {
         $project = $projectModel::find($request->project_id);
         $parent = Todo::findOrFail($request->parent_id);
@@ -33,7 +56,14 @@ class TodoService
             throw new \Exception($e->getMessage());
         }
     }
-    public function edit($todo, TodoRequest $request)
+
+    /**
+     * @param $todo
+     * @param TodoRequest $request
+     * @return TodoResource
+     * @throws \Exception
+     */
+    public function edit($todo, TodoRequest $request): TodoResource
     {
         try {
             $todo->update($request->except('tags'));
@@ -44,6 +74,11 @@ class TodoService
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * @param $todo
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($todo)
     {
         $todo->delete();
@@ -53,6 +88,10 @@ class TodoService
         ], 200);
     }
 
+    /**
+     * @param Todo $todo
+     * @param $tags
+     */
     private function addTags(Todo $todo, $tags)
     {
         if( $tags != "") {
