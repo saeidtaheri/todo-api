@@ -5,63 +5,73 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\TodoRequest;
 use App\Http\Resources\TodoResource;
 use App\Models\Project;
-use App\Models\Tag;
 use App\Models\Todo;
 use App\Services\TodoService;
-use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TodoController
 {
     /**
-     * @param TodoService $todo
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @var TodoService
      */
-    public function index(TodoService $todo)
+    private $todoService;
+
+    /**
+     * Inject TodoService to the controller.
+     * @param TodoService $todoService
+     */
+    public function __construct(TodoService $todoService)
     {
-        return $todo->all();
+        $this->todoService = $todoService;
     }
 
     /**
-     * @param TodoService $todoService
+     * @return AnonymousResourceCollection
+     */
+    public function index()
+    {
+        return $this->todoService->all();
+    }
+
+    /**
      * @param Todo $todo
      * @return TodoResource
      */
-    public function show(TodoService $todoService, Todo $todo)
+    public function show(Todo $todo)
     {
-        return $todoService->item($todo);
+        return $this->todoService->item($todo);
     }
 
     /**
-     * @param TodoService $todo
      * @param TodoRequest $request
      * @param Project $project
      * @return TodoResource
-     * @throws \Exception
+     * @throws Exception
      */
-    public function store(TodoService $todo, TodoRequest $request, Project $project)
+    public function store(TodoRequest $request, Project $project)
     {
-        return $todo->create($request, $project);
+        return $this->todoService->create($request, $project);
     }
 
     /**
-     * @param TodoService $todoService
      * @param TodoRequest $request
      * @param Todo $todo
      * @return TodoResource
-     * @throws \Exception
+     * @throws Exception
      */
-    public function update(TodoService $todoService, TodoRequest $request, Todo $todo)
+    public function update(TodoRequest $request, Todo $todo)
     {
-       return $todoService->edit($todo, $request);
+       return $this->todoService->edit($todo, $request);
     }
 
     /**
-     * @param TodoService $todoService
      * @param Todo $todo
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function destroy(TodoService $todoService, Todo $todo)
+    public function destroy(Todo $todo)
     {
-        return $todoService->delete($todo);
+        return $this->todoService->delete($todo);
     }
 }

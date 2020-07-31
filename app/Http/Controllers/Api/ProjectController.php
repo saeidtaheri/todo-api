@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectRequest;
-use App\Http\Requests\UpdateProject;
 use App\Http\Resources\ProjectResource;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -13,54 +13,65 @@ use App\Services\ProjectService;
 class ProjectController extends Controller
 {
     /**
+     * @var ProjectService
+     */
+    private $projectService;
+
+    /**
+     * ProjectController constructor.
+     * @param ProjectService $projectService
+     */
+    public function __construct(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+    }
+
+    /**
      * @param ProjectService $project
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index(ProjectService $project)
     {
-        return $project->all();
+        return $this->projectService->all();
     }
 
     /**
-     * @param ProjectService $project
      * @param ProjectRequest $request
      * @return ProjectResource
+     * @throws Exception
      */
-    public function store(ProjectService $project, ProjectRequest $request)
+    public function store(ProjectRequest $request)
     {
-        return $project->create($request);
+        return $this->projectService->create($request);
     }
 
     /**
-     * @param ProjectService $projectService
      * @param Project $project
      * @return ProjectResource
      */
-    public function show(ProjectService $projectService, Project $project)
+    public function show(Project $project)
    {
-       return $projectService->item($project);
+       return $this->projectService->item($project);
    }
 
     /**
-     * @param ProjectService $projectService
      * @param ProjectRequest $request
      * @param Project $project
      * @return ProjectResource|\Illuminate\Http\JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
-    public function update(ProjectService $projectService, ProjectRequest $request, Project $project)
+    public function update(ProjectRequest $request, Project $project)
    {
-       return $projectService->edit($request, $project);
+       return $this->projectService->edit($request, $project);
    }
 
     /**
-     * @param ProjectService $projectService
      * @param Request $request
      * @param Project $project
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(ProjectService $projectService, Request $request, Project $project)
+    public function destroy(Request $request, Project $project)
    {
-        return $projectService->delete($project, $request);
+        return $this->projectService->delete($project, $request);
    }
 }
