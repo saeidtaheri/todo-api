@@ -13,11 +13,12 @@ use App\Services\ProjectService;
 class ProjectController extends Controller
 {
     /**
+     * @param ProjectService $project
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(ProjectService $project)
     {
-        return ProjectResource::collection(Project::all());
+        return $project->all();
     }
 
     /**
@@ -31,17 +32,18 @@ class ProjectController extends Controller
     }
 
     /**
+     * @param ProjectService $projectService
      * @param Project $project
      * @return ProjectResource
      */
-    public function show(Project $project)
+    public function show(ProjectService $projectService, Project $project)
    {
-       return new ProjectResource($project);
+       return $projectService->item($project);
    }
 
     /**
      * @param ProjectService $projectService
-     * @param UpdateProject $request
+     * @param ProjectRequest $request
      * @param Project $project
      * @return ProjectResource|\Illuminate\Http\JsonResponse
      * @throws \Exception

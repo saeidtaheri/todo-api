@@ -13,20 +13,22 @@ use Carbon\Carbon;
 class TodoController
 {
     /**
+     * @param TodoService $todo
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(TodoService $todo)
     {
-        return TodoResource::collection(Todo::parentTasks()->get());
+        return $todo->all();
     }
 
     /**
+     * @param TodoService $todoService
      * @param Todo $todo
      * @return TodoResource
      */
-    public function show(Todo $todo)
+    public function show(TodoService $todoService, Todo $todo)
     {
-        return new TodoResource($todo);
+        return $todoService->item($todo);
     }
 
     /**

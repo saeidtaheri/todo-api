@@ -4,13 +4,34 @@
 namespace App\Services;
 
 use App\Http\Requests\ProjectRequest;
-use App\Http\Requests\UpdateProject;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 
 class ProjectService
 {
-    public function create(ProjectRequest $request)
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function all(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    {
+        return ProjectResource::collection(Project::all());
+    }
+
+    /**
+     * @param Project $project
+     * @return ProjectResource
+     */
+    public function item(Project $project): ProjectResource
+    {
+        return new ProjectResource($project);
+    }
+
+    /**
+     * @param ProjectRequest $request
+     * @return ProjectResource
+     * @throws \Exception
+     */
+    public function create(ProjectRequest $request): ProjectResource
     {
         try {
             $request->project()->save();
@@ -21,7 +42,13 @@ class ProjectService
         }
     }
 
-    public function edit(UpdateProject $request, $project)
+    /**
+     * @param ProjectRequest $request
+     * @param $project
+     * @return ProjectResource|\Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function edit(ProjectRequest $request, $project)
     {
         if($request->user()->id !== $project->user_id) {
             return response()->json([
@@ -37,6 +64,12 @@ class ProjectService
             throw new \Exception($e->getMessage());
         }
     }
+
+    /**
+     * @param $project
+     * @param $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($project, $request)
     {
         if($request->user()->id !== $project->user_id) {
