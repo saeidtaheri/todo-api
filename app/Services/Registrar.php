@@ -5,9 +5,8 @@ namespace App\Services;
 use App\Contracts\RegistrarInterface;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use mysql_xdevapi\Exception;
 
-class Registrar implements RegistrarInterface{
+class Registrar implements RegistrarInterface {
 
     protected $model;
 
@@ -38,15 +37,14 @@ class Registrar implements RegistrarInterface{
     public function register($request)
     {
         try {
-            $user = $this->model::create([
+            $this->model::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password)
             ]);
 
-            return response()->json($user);
-        }catch (Exception $e)
-        {
+            return response()->json(['Registered successfully, please login'], 201);
+        }catch (\Exception $e) {
             echo $e->getMessage();
         }
     }
@@ -57,17 +55,23 @@ class Registrar implements RegistrarInterface{
      */
     public function login($request)
     {
-        if( Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-
-            $success['token'] = $this->generateAccessToken($user)->accessToken;
-
+        try {
+            if( Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                $user = Auth::user();
+    
+                $success['token'] = $this->generateAccessToken($user)->accessToken;
+    
+                return response()->json([
+                    'success' => $success,
+                ], 200);
+            }
+        }catch (\Exception $e) {
             return response()->json([
-                'success' => $success,
-            ], 200);
+                'errors' => $e->getMessage()
+            ]);
         }
 
-        return response()->json(['error'=>'Unauthorized!'], 401);
+        return response()->json(['errors'=>'Incorrect email or password!'], 401);
     }
 
     public function logout($request)
