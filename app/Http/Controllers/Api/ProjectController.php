@@ -62,7 +62,9 @@ class ProjectController extends Controller
      */
     public function update(ProjectRequest $request, Project $project)
    {
-       return $this->projectService->edit($request, $project);
+        $this->authorize('update', $project);
+
+        return $this->projectService->edit($request, $project);
    }
 
     /**
@@ -72,6 +74,8 @@ class ProjectController extends Controller
      */
     public function destroy(Request $request, Project $project)
    {
+        $this->authorize('delete', $project);
+        
         return $this->projectService->delete($project, $request);
    }
 }

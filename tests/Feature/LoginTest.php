@@ -21,11 +21,13 @@ class LoginTest extends TestCase
         $this->client = $clientRepository->createPersonalAccessClient(
             null, 'Test Personal Access Client', '/'
         );
+
         DB::table('oauth_personal_access_clients')->insert([
             'client_id' => $this->client->id,
             'created_at' => date('Y-m-d'),
             'updated_at' => date('Y-m-d'),
         ]);
+
         $this->user = User::create([
             'id' => 1,
             'name' => 'test',
@@ -33,6 +35,7 @@ class LoginTest extends TestCase
             'email' => 'test@test.test',
             'password' => bcrypt('secret')
         ]);
+
         $this->token = $this->user->createToken('TestToken', [])->accessToken;
     }
 
@@ -89,7 +92,7 @@ class LoginTest extends TestCase
             'email' => 'test@test.test',
             'password' => 'secret',
         ];
-
+        
         $this->json('POST', '/api/login', $body, ['Accept' => 'application/json'])
         ->assertStatus(200)
         ->assertJsonStructure([

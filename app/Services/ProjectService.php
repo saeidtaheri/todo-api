@@ -50,12 +50,6 @@ class ProjectService
      */
     public function edit(ProjectRequest $request, $project)
     {
-        if($request->user()->id !== $project->user_id) {
-            return response()->json([
-                'error' => 'You can only edit your own Project.'
-            ], 403);
-        }
-
         try {
             $project->update($request->all());
 
@@ -72,12 +66,6 @@ class ProjectService
      */
     public function delete($project, $request)
     {
-        if($request->user()->id !== $project->user_id) {
-            return response()->json([
-                'error' => 'You Cant Delete Project!'
-            ], 403);
-        }
-
         $project->delete();
 
         return response()->json([
